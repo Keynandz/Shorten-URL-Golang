@@ -1,6 +1,6 @@
 ## Getting Started
 
-https://ibb.co/qjTF00K
+!IMG_2023(https://ibb.co/qjTF00K)
 
 Cek .env lalu sesuaikan dengan settingan kalian
 
