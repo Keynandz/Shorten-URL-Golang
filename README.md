@@ -1,6 +1,6 @@
 ## Getting Started
 
-![IMG_20230124_222400_1](https://user-images.githubusercontent.com/115182304/214334875-bc95ac66-814e-40d4-b0e6-468bcc271208.jpg)
+![IMG_20230124_222400_1](https://i.ibb.co/6wjJvvz/image-2023-11-20-163159701.png)
 
 Cek .env lalu sesuaikan dengan settingan kalian
 
