@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shorten URL</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #aedcf5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #4da3f7;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+        }
+
+        .credit {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 10px;
+            color: #fff;
+            font-size: 10px;
+            font-style: italic;
+        }
+
+        h2 {
+            color: #fff;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #45a049;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #3f9142;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="credit">Created by KEYNANDZ</div>
+        <h2>Shorten URL</h2>
+        <form id="shortenForm">
+            <label for="longURL">Link:</label>
+            <input type="text" id="longURL" name="longURL" required>
+
+            <label for="customURL">Custom URL:</label>
+            <input type="text" id="customURL" name="customURL">
+
+            <button type="button" onclick="submitForm()">Shorten</button>
+        </form>
+    </div>
+
+    <script>
+        function submitForm() {
+            var longURL = document.getElementById('longURL').value;
+            var customURL = document.getElementById('customURL').value;
+            fetch('http://localhost:9090/shorten', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    longURL: longURL,
+                    customShortURL: customURL,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Shortened URL: ' + data['short link']);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+
+</html>
