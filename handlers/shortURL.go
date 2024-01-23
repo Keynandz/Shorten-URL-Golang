@@ -60,7 +60,7 @@ func ShortUrl(e *echo.Echo) error {
 }
 
 func Home(c echo.Context) error {
-	content, err := os.ReadFile("index.html")
+	content, err := os.ReadFile("views/index.html")
 	if err != nil {
 		return c.String(http.StatusInternalServerError, "Could not open requested file")
 	}
