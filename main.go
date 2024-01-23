@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"go-shorturl/handlers"
 	"log"
 	"net/http"
 	"os"
 
+	"go-shorturl/handlers"
 	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -25,13 +25,11 @@ func main() {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization, "X-Auth-Token"},
 	}))
 
+	e.GET("/", handlers.Home)
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	format := ":%s"
+	format := "0.0.0.0:%s"
 	port := fmt.Sprintf(format, os.Getenv("PORT"))
-	handlers.ShortUrl(e)
-	e.Static("/", "views")
-	e.File("/index", "views/index.html")
-	e.Logger.Fatal(e.Start(port))
+	e.Start(port)
 }
