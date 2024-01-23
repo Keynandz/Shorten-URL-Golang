@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go-shorturl/repositories"
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
 )
@@ -37,7 +36,7 @@ func ShortUrl(e *echo.Echo) error {
 		urlMap[shortURL] = req.LongURL
 
 		format := "http://%s:%s/keynandz/%s"
-		response := fmt.Sprintf(format, "keynandz-url.netlify.app", os.Getenv("PORT"), shortURL)
+		response := fmt.Sprintf(format, "keynandz-url.netlify.app", "9090", shortURL)
 		return c.JSON(http.StatusOK, map[string]interface{}{
 			"short link":  response,
 			"status_code": http.StatusOK,
