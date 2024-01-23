@@ -21,6 +21,6 @@ func main() {
 	port := fmt.Sprintf(format, os.Getenv("PORT"))
 	handlers.ShortUrl(e)
 	e.Static("/", "views")
-	e.File("/index", "views/index.html")
+	e.File("/", "views/index.html")
 	e.Logger.Fatal(e.Start(port))
 }
