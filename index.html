@@ -22,8 +22,8 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            width: 100%;
+            width: 400px;
+            transition: width 0.3s ease;
             text-align: center;
             position: relative;
         }
@@ -34,7 +34,7 @@
             left: 0;
             padding: 10px;
             color: #fff;
-            font-size: 10px;
+            font-size: 12px;
             font-style: italic;
         }
 
@@ -72,6 +72,57 @@
         button:hover {
             background-color: #3f9142;
         }
+
+        #shortenedURL {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .result-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .shortened-link {
+            color: #007bff;
+            font-size: 16px;
+            font-weight: bold;
+            text-decoration: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 70%;
+        }
+
+        .shortened-link:hover {
+            text-decoration: underline;
+        }
+
+        .copy-btn {
+            background-color: #ff9800;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .copy-btn:hover {
+            background-color: #e68a00;
+        }
+
+        .header {
+            color: #fff;
+            margin-top: 10px;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -81,19 +132,34 @@
         <h2>Shorten URL</h2>
         <form id="shortenForm">
             <label for="longURL">Link:</label>
-            <input type="text" id="longURL" name="longURL" required>
+            <input type="text" id="longURL" name="longURL" placeholder="Enter your link here" required>
 
             <label for="customURL">Custom URL:</label>
-            <input type="text" id="customURL" name="customURL">
+            <input type="text" id="customURL" name="customURL" placeholder="Enter custom short URL (optional)">
 
             <button type="button" onclick="submitForm()">Shorten</button>
         </form>
+        <div id="loading" class="header" style="display: none;"><h3>Shortened URL:</h3></div>
+        <div id="shortenedURL"></div>
     </div>
 
     <script>
         function submitForm() {
-            var longURL = document.getElementById('longURL').value;
-            var customURL = document.getElementById('customURL').value;
+            var longURL = document.getElementById('longURL').value.trim();
+            var customURL = document.getElementById('customURL').value.trim();
+
+            if (!longURL || !isValidURL(longURL)) {
+                alert('Please enter a valid URL.');
+                return;
+            }
+
+            if (customURL.includes(" ")) {
+                alert('Custom URL cannot contain spaces.');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'none';
+
             fetch('http://localhost:9090/keynandz/shorten', {
                 method: 'POST',
                 headers: {
@@ -104,12 +170,43 @@
                     customShortURL: customURL,
                 }),
             })
-            .then(response => response.json())
-            .then(data => {
-                alert('Shortened URL: ' + data['short link']);
+            .then(response => {
+                document.getElementById('loading').style.display = 'block';
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.message); });
+                }
+                return response.json();
             })
+            .then(data => {
+                var resultDiv = document.getElementById('shortenedURL');
+                resultDiv.innerHTML = `
+                    <div class="result-box">
+                        <a href="${data['short link']}" target="_blank" class="shortened-link">${data['short link']}</a>
+                        <button class="copy-btn" onclick="copyToClipboard('${data['short link']}')">Copy</button>
+                    </div>
+                `;
+
+                var container = document.querySelector('.container');
+                var newWidth = Math.max(400, resultDiv.scrollWidth + 50);
+                container.style.width = newWidth + 'px';
+            })
+
             .catch(error => {
-                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                alert('Error: ' + error.message);
+            });
+        }
+
+        function isValidURL(string) {
+            var res = string.match(/(http|https):\/\/(\w+:?\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/);
+            return res !== null;
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Copied to clipboard: ' + text);
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
             });
         }
     </script>

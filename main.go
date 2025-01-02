@@ -26,10 +26,12 @@ func main() {
 	}))
 
 	e.GET("/", handlers.Home)
+	handlers.ShortUrl(e)
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
 	format := "0.0.0.0:%s"
 	port := fmt.Sprintf(format, os.Getenv("PORT"))
-	e.Start(port)
+	e.Logger.Fatal(e.Start(port))
 }

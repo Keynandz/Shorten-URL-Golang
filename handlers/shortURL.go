@@ -5,6 +5,7 @@ import (
 	"go-shorturl/repositories"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 )
@@ -20,15 +21,28 @@ type ShortenResponse struct {
 	ShortURL string `json:"shortURL"`
 }
 
-func ShortUrl(e *echo.Echo) error {
-	e.POST("keynandz/shorten", func(c echo.Context) error {
+func ShortUrl(e *echo.Echo) {
+	e.POST("/keynandz/shorten", func(c echo.Context) error {
 		req := new(ShortenRequest)
 		if err := c.Bind(req); err != nil {
 			return c.String(http.StatusBadRequest, "Invalid request body")
 		}
 
+		// Validasi spasi dalam CustomShortURL
+		if strings.Contains(req.CustomShortURL, " ") {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"message": "Custom short URL cannot contain spaces",
+			})
+		}
+
 		var shortURL string
 		if req.CustomShortURL != "" {
+			// Cek jika CustomShortURL sudah ada
+			if _, exists := urlMap[req.CustomShortURL]; exists {
+				return c.JSON(http.StatusBadRequest, map[string]interface{}{
+					"message": "Custom short URL already exists, please choose another one",
+				})
+			}
 			shortURL = req.CustomShortURL
 		} else {
 			shortURL = repositories.GenerateShortURL()
@@ -44,7 +58,7 @@ func ShortUrl(e *echo.Echo) error {
 		})
 	})
 
-	e.GET("keynandz/:shortURL", func(c echo.Context) error {
+	e.GET("/keynandz/:shortURL", func(c echo.Context) error {
 		shortURL := c.Param("shortURL")
 		longURL, exists := urlMap[shortURL]
 		if exists {
@@ -55,8 +69,6 @@ func ShortUrl(e *echo.Echo) error {
 			"error":   http.StatusNotFound,
 		})
 	})
-
-	return nil
 }
 
 func Home(c echo.Context) error {
